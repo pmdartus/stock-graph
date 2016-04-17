@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 
 import {
-  getCompanyInformations,
+  getCompaniesInformations,
   getCompanyStock
 } from './api';
 
@@ -45,7 +45,7 @@ export const schema = new GraphQLSchema({
             type: GraphQLString
           }
         },
-        resolve: (_, { search }) => getCompanyInformations(search)
+        resolve: (_, { search }) => getCompaniesInformations(search)
       }
     }
   })

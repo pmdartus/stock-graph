@@ -18,44 +18,29 @@ function lowerCamelCaseKeys(obj) {
   return ret;
 }
 
-export function getCompanyInformations(input) {
+async function fetchAndParse(urlToFetch) {
+  const response = await fetch(urlToFetch);
+  if (response.status !== 200)
+    throw new Error(`Invalid server response`);
+
+  const json = await response.json();
+  return json;
+}
+
+export async function getCompaniesInformations(input) {
   const parameterizedUrl = Object.assign(API_ENDPOINTS.LOOKUP, {
     query: { input }
   });
 
-  return fetch(url.format(parameterizedUrl))
-    .then(response => {
-      if (response.status !== 200)
-        throw new Error(`Invalid server response`);
-
-      return response.json();
-    })
-    .then(response => {
-      if (response.Message)
-        throw new Error(response.Message);
-
-      return response.map(lowerCamelCaseKeys)
-    });
+  const companies = await fetchAndParse(url.format(parameterizedUrl));
+  return companies.map(lowerCamelCaseKeys);
 }
 
-export function getCompanyStock(symbol) {
+export async function getCompanyStock(symbol) {
   const parameterizedUrl = Object.assign(API_ENDPOINTS.QUOTE, {
     query: { symbol }
   });
 
-  console.log(url.format(parameterizedUrl))
-
-  return fetch(url.format(parameterizedUrl))
-    .then(response => {
-      if (response.status !== 200)
-        throw new Error(`Invalid server response`);
-
-      return response.json();
-    })
-    .then(response => {
-      if (response.Message)
-        throw new Error(response.Message);
-
-      return lowerCamelCaseKeys(response)
-    });
+  const stockInfo = await fetchAndParse(url.format(parameterizedUrl));
+  return lowerCamelCaseKeys(stockInfo);
 }
