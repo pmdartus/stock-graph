@@ -1,7 +1,7 @@
 import graphqlHTTP from 'express-graphql';
 import express from 'express';
 
-import { schema } from './schema';
+import { schema } from './src/schema';
 
 const IN_DEV = process.env.ENV !== 'production';
 

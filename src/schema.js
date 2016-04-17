@@ -1,16 +1,36 @@
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFloat,
+  GraphQLList,
   GraphQLSchema
 } from 'graphql';
 
-import data from './data.json';
+import {
+  getCompanyInformations,
+  getCompanyStock
+} from './api';
 
-const userType = new GraphQLObjectType({
-  name: 'User',
+const stockType = new GraphQLObjectType({
+  name: 'Stock',
   fields: {
-    id: { type: GraphQLString },
+    lastPrice: { type: GraphQLFloat },
+    change: { type: GraphQLFloat },
+    changePercent: { type: GraphQLFloat },
+    marketCap: { type: GraphQLFloat },
+  }
+});
+
+const companyType = new GraphQLObjectType({
+  name: 'Company',
+  fields: {
+    symbol: { type: GraphQLString },
     name: { type: GraphQLString },
+    exchange: { type: GraphQLString },
+    stock: {
+      type: stockType,
+      resolve: ({ symbol }) => getCompanyStock(symbol)
+    }
   }
 });
 
@@ -18,12 +38,14 @@ export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
-      user: {
-        type: userType,
+      companies: {
+        type: new GraphQLList(companyType),
         args: {
-          id: { type: GraphQLString }
+          search: {
+            type: GraphQLString
+          }
         },
-        resolve: (_, args) => data[args.id]
+        resolve: (_, { search }) => getCompanyInformations(search)
       }
     }
   })
